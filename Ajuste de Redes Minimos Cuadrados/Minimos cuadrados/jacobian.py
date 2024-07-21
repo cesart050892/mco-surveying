@@ -20,102 +20,52 @@ observaciones = np.array([
     [8, 11, 2057.4457],   # Distancia medida entre 8 y 11
 ], dtype=object)
 
-# Ordenar los puntos por el identificador (convertidos a int)
-puntos_ordenados = sorted(puntos, key=lambda x: int(x[0]))
+def crear_vector_parametros(puntos, observaciones):
+    puntos_ordenados = sorted(puntos, key=lambda x: int(x[0]))
 
-# Crear el vector de parámetros y el diccionario de índices
-vector_parametros = []
-indices_diccionario = {}
+    vector_parametros = []
+    indices_diccionario = {}
 
-# Agregar las coordenadas de los puntos al vector de parámetros
-for i, punto in enumerate(puntos_ordenados):
-    idx = len(vector_parametros)
-    indices_diccionario[punto[0]] = idx
-    vector_parametros.extend(punto[1])
+    for i, punto in enumerate(puntos_ordenados):
+        idx = len(vector_parametros)
+        indices_diccionario[punto[0]] = idx
+        vector_parametros.extend(punto[1])
 
-# Ordenar las observaciones por la distancia medida de mayor a menor
-observaciones_ordenadas = sorted(observaciones, key=lambda x: x[2], reverse=True)
+    observaciones_ordenadas = sorted(observaciones, key=lambda x: x[2], reverse=True)
 
-# Agregar las distancias de las observaciones al vector de parámetros
-for i, obs in enumerate(observaciones_ordenadas):
-    idx = len(vector_parametros)
-    indices_diccionario[f"obs({int(obs[0])}-{int(obs[1])})"] = idx
-    vector_parametros.append(obs[2])
+    for i, obs in enumerate(observaciones_ordenadas):
+        idx = len(vector_parametros)
+        indices_diccionario[f"obs({int(obs[0])}-{int(obs[1])})"] = idx
+        vector_parametros.append(obs[2])
 
-# Convertir a numpy array para mejor manejo
-vector_parametros = np.array(vector_parametros)
+    return np.array(vector_parametros), indices_diccionario, observaciones_ordenadas
 
-# Calcular las longitudes a partir del diccionario de índices
-length_diccionario = {}
-for key, value in indices_diccionario.items():
-    if isinstance(key, int):  # Para los puntos
-        length_diccionario[key] = 3  # Cada punto tiene 3 coordenadas (x, y, z)
-    else:  # Para las observaciones
-        length_diccionario[key] = 1  # Cada observación tiene 1 distancia
+def calcular_longitudes(indices_diccionario):
+    length_diccionario = {}
+    for key, value in indices_diccionario.items():
+        if isinstance(key, int):  
+            length_diccionario[key] = 3  
+        else:  
+            length_diccionario[key] = 1  
 
-# Calcular la longitud total
-longitud_total = sum(length_diccionario.values())
+    longitud_total = sum(length_diccionario.values())
+    return length_diccionario, longitud_total
 
 def parcial_coeficients_obs_row(XA, XB, LAB):
-    """
-    Calcula una fila de la matriz A para la ecuación de distancia linearizada entre dos puntos.
+    dX = XB[0] - XA[0]
+    dY = XB[1] - XA[1]
 
-    Parámetros:
-    XA : array_like
-        Coordenadas iniciales del punto A (aproximaciones iniciales).
-    XB : array_like
-        Coordenadas iniciales del punto B (aproximaciones iniciales).
-    LAB : float
-        Distancia medida entre los puntos A y B.
-
-    Devuelve:
-    A_row : list
-        Fila de la matriz A con las derivadas parciales.
-    W : float
-        Vector de observaciones (diferencia entre distancia medida y distancia calculada).
-    """
     if len(XA) == 2 or len(XB) == 2:
-        # Diferencias de coordenadas en 2D
-        dX = XB[0] - XA[0]
-        dY = XB[1] - XA[1]
-
-        # Distancia calculada entre los puntos A y B en 2D
         AB0 = np.sqrt(dX**2 + dY**2)
-
-        # Derivadas parciales en 2D
-        dX_A = -dX / AB0
-        dY_A = -dY / AB0
-        dX_B = dX / AB0
-        dY_B = dY / AB0
-
-        # Fila de la matriz A en 2D
-        partial_pt1 = [dX_A, dY_A]
-        partial_pt2 = [dX_B, dY_B]
-
+        partial_pt1 = [-dX / AB0, -dY / AB0]
+        partial_pt2 = [dX / AB0, dY / AB0]
     else:
-        # Diferencias de coordenadas en 3D
-        dX = XB[0] - XA[0]
-        dY = XB[1] - XA[1]
         dZ = XB[2] - XA[2]
-
-        # Distancia calculada entre los puntos A y B en 3D
         AB0 = np.sqrt(dX**2 + dY**2 + dZ**2)
+        partial_pt1 = [-dX / AB0, -dY / AB0, -dZ / AB0]
+        partial_pt2 = [dX / AB0, dY / AB0, dZ / AB0]
 
-        # Derivadas parciales en 3D
-        dX_A = -dX / AB0
-        dY_A = -dY / AB0
-        dZ_A = -dZ / AB0
-        dX_B = dX / AB0
-        dY_B = dY / AB0
-        dZ_B = dZ / AB0
-
-        # Fila de la matriz A en 3D
-        partial_pt1 = [dX_A, dY_A, dZ_A]
-        partial_pt2 = [dX_B, dY_B, dZ_B]
-
-    # Vector de observaciones W (diferencia entre distancia medida y distancia calculada)
     W = AB0 - LAB
-
     return partial_pt1, partial_pt2, W
 
 def crear_matrices(observaciones, indices_diccionario, vector_parametros):
@@ -140,7 +90,7 @@ def crear_matrices(observaciones, indices_diccionario, vector_parametros):
             row_hiper[idx_a + i] = f"derv_parcial_{'xyz'[i]}_{obs[0]}"
             row_hiper[idx_b + i] = f"derv_parcial_{'xyz'[i]}_{obs[1]}"
         
-        row_A[idx_obs] = -1  # -1 en el índice de la observación
+        row_A[idx_obs] = -1  
         row_hiper[idx_obs] = f"dist_obs_{int(obs[0])}-{int(obs[1])}"
         
         matriz_A.append(row_A)
@@ -149,8 +99,12 @@ def crear_matrices(observaciones, indices_diccionario, vector_parametros):
     
     return np.array(matriz_A), hipermatriz, np.array(W)
 
-matriz_A, hipermatriz, W = crear_matrices( observaciones_ordenadas, indices_diccionario, vector_parametros)
+# Uso de las funciones modulares
+vector_parametros, indices_diccionario, observaciones_ordenadas = crear_vector_parametros(puntos, observaciones)
+length_diccionario, longitud_total = calcular_longitudes(indices_diccionario)
+matriz_A, hipermatriz, W = crear_matrices(observaciones_ordenadas, indices_diccionario, vector_parametros)
 
+# Impresión de resultados
 print("Vector de parámetros:")
 print(vector_parametros)
 
