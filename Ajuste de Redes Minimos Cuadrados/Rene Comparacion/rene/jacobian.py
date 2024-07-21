@@ -33,23 +33,23 @@ def getGradient(data, zeros, index, pa_index, pb_index):
 
     return gradient
 
-def getJacobian(npdata):
+def getJacobian(data, lenght):
 
     # Orden base 
-    # obs2 = getGradient(npdata[1], 24, 18, 0, 3) # observacion 2 - 4-3
-    # obs5 = getGradient(npdata[4], 24, 19, 9, 6) # observacion 5 - 8-9
-    # obs1 = getGradient(npdata[0], 24, 20, 15, 12) # observacion 1 - 10-11
-    # obs4 = getGradient(npdata[3], 24, 21, 3, 6) # observacion 4 - 8-4
-    # obs3 = getGradient(npdata[2], 24, 22, 3, 15) # observacion 3 - 11-4
-    # obs6 = getGradient(npdata[5], 24, 23, 15, 6) # observacion 6 - 8-11
+    # obs2 = getGradient(data[1], lenght, 18, 0, 3) # observacion 2 - 4-3
+    # obs5 = getGradient(data[4], lenght, 19, 9, 6) # observacion 5 - 8-9
+    # obs1 = getGradient(data[0], lenght, 20, 15, 12) # observacion 1 - 10-11
+    # obs4 = getGradient(data[3], lenght, 21, 3, 6) # observacion 4 - 8-4
+    # obs3 = getGradient(data[2], lenght, 22, 3, 15) # observacion 3 - 11-4
+    # obs6 = getGradient(data[5], lenght, 23, 15, 6) # observacion 6 - 8-11
 
     # Orden nuevo 
-    obs2 = getGradient(npdata[1], 24, 18, 3, 0) # observacion 2 - 4-3
-    obs5 = getGradient(npdata[4], 24, 19, 6, 9) # observacion 5 - 8-9
-    obs1 = getGradient(npdata[0], 24, 20, 12, 15) # observacion 1 - 10-11
-    obs4 = getGradient(npdata[3], 24, 21, 6, 3) # observacion 4 - 8-4
-    obs3 = getGradient(npdata[2], 24, 22, 15, 3) # observacion 3 - 11-4
-    obs6 = getGradient(npdata[5], 24, 23, 6, 15) # observacion 6 - 8-11
+    obs2 = getGradient(data[1], lenght, 18, 3, 0) # observacion 2 - 4-3
+    obs5 = getGradient(data[4], lenght, 19, 6, 9) # observacion 5 - 8-9
+    obs1 = getGradient(data[0], lenght, 20, 12, 15) # observacion 1 - 10-11
+    obs4 = getGradient(data[3], lenght, 21, 6, 3) # observacion 4 - 8-4
+    obs3 = getGradient(data[2], lenght, 22, 15, 3) # observacion 3 - 11-4
+    obs6 = getGradient(data[5], lenght, 23, 6, 15) # observacion 6 - 8-11
 
     # Configurar opciones de impresión de NumPy para mostrar todos los decimales
     # np.set_printoptions(precision=17)
