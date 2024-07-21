@@ -13,7 +13,7 @@ DIMESIONPOINTS = 3
 OBS = 6
 
 v = getParameters(npdata)
-print(f"Vector de parametros [{type(v)}]:{v}")
+# print(f"Vector de parametros [{type(v)}]:{v}")
 
 LENGTHVECTORPARAMETER = (POINTS * DIMESIONPOINTS) + OBS
 
@@ -23,14 +23,15 @@ W = getResiduals(npdata)
 B = getJacobian(npdata)
 # print(f"Matriz B (Matrix Jacobiana aumentada): \n{B}")
 
-C = getWeightingMatrix()
-# print(f"Matriz de Pesos (Matrix Diagonal): \n{C}")
+option_from_to = {'from_to': (18, 23, .000004)}
+C = getWeightingMatrix(length=24, default_dev=.0005, option=option_from_to)
+print(f"Matriz de Pesos (Matrix Diagonal): \n{C}")
 
 V = getVectorCorrections(B, C, W)
-print(f"Vector de correciones [{type(V)}]: \n{V}")
+# print(f"Vector de correciones [{type(V)}]: \n{V}")
 
 l = V.flatten() - v
-print(f"Vector de parametros corregido: \n{l}")
+# print(f"Vector de parametros corregido: \n{l}")
 
 PT1 = [l[0], l[1], l[2]]
 PT2 = [l[3], l[4], l[5]]
