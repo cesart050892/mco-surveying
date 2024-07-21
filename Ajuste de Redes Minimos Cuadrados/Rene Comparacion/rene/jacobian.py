@@ -1,7 +1,7 @@
 import numpy as np
 
 def getPartials(data):
-    print(f"vector gradiente derivada parcial de {data[0]} - {data[1]}")
+    # print(f"vector gradiente derivada parcial de {data[0]} - {data[1]}")
     dX = np.float64(data[3][0]) - np.float64(data[2][0])
     dY = np.float64(data[3][1]) - np.float64(data[2][1])
     dZ = np.float64(data[3][2]) - np.float64(data[2][2])

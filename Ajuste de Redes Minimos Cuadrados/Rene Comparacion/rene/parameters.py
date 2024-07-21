@@ -1,7 +1,6 @@
 import numpy as np
 
-def getInitData(npdata, zeros):
-    vector = np.zeros(zeros, dtype=np.float64)
+def getParameters(npdata):
 
     pt1 = [npdata[1,3][0], npdata[1,3][1], npdata[1,3][2]] # punto 4
     pt2 = [npdata[1,2][0], npdata[1,2][1], npdata[1,2][2]] # punto 3
